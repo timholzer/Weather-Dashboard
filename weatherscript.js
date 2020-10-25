@@ -23,6 +23,7 @@ for (i = 0; i < pastSearch.length; i++) {
 $("#citySubmit").on("click", function() {
 
     $('#forecastTitle').addClass('show');
+    $('#error404').hide();
 
     city = $("#cityInput").val();
     
@@ -50,7 +51,15 @@ $("#citySubmit").on("click", function() {
 const firstqueryUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + apiKey;
 $.ajax({
     url: firstqueryUrl,
-    method: "GET"
+    method: "GET",
+    statusCode: {
+        404: function() {
+          $('#currentCity').hide();
+          $('#5dayForecast').hide();
+          $('#error404').show();
+          $('#forecastTitle').hide();
+        }
+    }
   })
   .then(function (response){
 
@@ -70,23 +79,20 @@ $.ajax({
 
         var todayHumidity = response.daily[0].humidity;
         var todayUVI = response.daily[0].uvi;
-        console.log(todayUVI);
         var todayWind = response.daily[0].wind_speed;
         todayWind = Math.round(todayWind);
         var todayIcon = response.daily[0].weather[0].icon;
-        console.log(todayIcon);
         var todayHigh = response.daily[0].temp.max;
         todayHigh = Math.round(todayHigh);
         var todayMin = response.daily[0].temp.min;
         todayMin = Math.round(todayMin);
         todayIconLink = "http://openweathermap.org/img/wn/" + todayIcon + "@2x.png";
-        console.log(todayIconLink);
-        console.log(city);
 
         //clearing the div
         $("#currentCity").empty();
 
         //moving it to the html
+ 
 
         const card = $("<div>").addClass("card");
         const cardBody = $("<div>").addClass("card-body");
@@ -94,7 +100,8 @@ $.ajax({
         const cityDate = $("<h4>").addClass("card-title").text(date.toLocaleDateString('en-US'));
         const highTemp = $("<p>").addClass("card-text").text("High: " + todayHigh + " °F");
         const lowTemp = $("<p>").addClass("card-text").text("Low: " + todayMin + " °F");
-        const UVDanger = $("<p>").addClass("card-text").text("UV Index: " + todayUVI);    
+       //  $("<p>").addClass("card-text").text("UV Index: " + todayUVI);
+        var UVDanger = $("<div>").html('<span>UV Index: </span>' + '<span class="badge badge-pill" id="uvWarn">' + todayUVI + '</span>');      
         const humidity = $("<p>").addClass("card-text").text("Humidity: " + todayHumidity + "%");
         const wind = $("<p>").addClass("card-text").text("Wind Speed: " + todayWind + " MPH");
         const image = $("<img>").attr("src", todayIconLink)
@@ -102,7 +109,22 @@ $.ajax({
         cityname.append(cityDate, image)
         cardBody.append(cityname, highTemp, lowTemp, UVDanger, humidity, wind);
         card.append(cardBody);
-        $("#currentCity").append(card)
+        $("#currentCity").append(card);
+
+
+                if (todayUVI < 3) {
+            $("#uvWarn").css('background-color', 'green');
+          } else if (todayUVI < 6) {
+            $('#uvWarn').css('background-color', 'yellow');
+          } else if (todayUVI < 8) {
+            $('##uvWarn').css('background-color', 'orange');
+          } else if (todayUVI < 11) {
+            $('#uvWarn').css('background-color', 'red');
+          } else {
+            $('#uvWarn').css('background-color', 'purple');
+          }
+    
+
 
 
 
@@ -121,9 +143,7 @@ $.ajax({
             var futurelowtemp = response.daily[i].temp.min;
             futurelowtemp = Math.round(futurelowtemp);
             var futureIcon = response.daily[i].weather[0].icon;
-            console.log(futureIcon);
             var futureHumidity = response.daily[i].humidity;
-            console.log(futureHumidity);
             futureIconLink = "http://openweathermap.org/img/wn/" + futureIcon + "@2x.png";
 
              //clearing the div
@@ -152,7 +172,6 @@ $.ajax({
 
 
 // add local storage and click as a search
-// uv i color codes
 //comment up code
 
 
