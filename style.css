@@ -1,15 +1,3 @@
-.greenBack{
-    background-color: green;
-}
-.yellowBack{
-    background-color: yellow;
-}
-.orangeBack{
-    background-color:orange;
-}
-.redBack{
-    background-color: red;
-}
-.purpleBack{
-    background-color:purple;
+.nodisplay {
+    display: none;
 }
