@@ -1,17 +1,64 @@
 const apiKey = "&appid=94dc837cac6009ee9dec8622a9fe75ff";
 let date = new Date();
 let city
+var pastSearch = localStorage.getItem("Past Cities");
 
+makeHistory();
+function makeHistory(){
 
+pastSearch = JSON.parse(pastSearch) || [];
+
+for (i = 0; i < pastSearch.length; i++) {
+    var PC = document.createElement("ul")  
+    PC.innerHTML = pastSearch[i];
+
+    console.log(PC);
+    document.getElementById("searchHistory").appendChild(PC); 
+    
+}
+    $("ul").addClass("list-group list-group-flush list");
+
+}
 
 $("#citySubmit").on("click", function() {
 
     $('#forecastTitle').addClass('show');
 
     city = $("#cityInput").val();
-    console.log(city);
+    
+    pastSearch.push(city);
+    localStorage.setItem("Past Cities", JSON.stringify(pastSearch));
 
     $("#cityInput").val("");  
+
+    if(!localStorage.getItem('scheduledEvents')) {
+        updateCalendar(scheduledEvents);
+      } else {
+    updateCalendar(JSON.parse(localStorage.getItem('scheduledEvents')))
+      }
+      $("#searchHistory").empty();
+
+
+      for (i = 0; i < pastSearch.length; i++) {
+          var PC = document.createElement("ul")  
+          PC.innerHTML = pastSearch[i];
+      
+          console.log(PC);
+          document.getElementById("searchHistory").appendChild(PC); 
+          
+      }
+          $("ul").addClass("list-group list-group-flush list");
+
+
+
+      //and adds the text to the calender
+    function updateCalendar(scheduledEvents){
+        $(".calendar-row").each(function() {
+            let theHour = $(this).children("div");
+            $(this).children("textarea").text(scheduledEvents[theHour.text()]);
+        })
+    }
+
 
 const firstqueryUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + apiKey;
 $.ajax({
@@ -105,8 +152,11 @@ $.ajax({
 
 
 
-//today's weather icon, highs, lows, wind speed, humidity, uv index with a color indicator
-//we want the 5 day: weather icon, temperture, humidity
+// add local storage and click as a search
+//clearing on search
+// uv i color codes
+//rounding numbers
+//comment up code
 
 
       })
